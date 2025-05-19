@@ -427,7 +427,7 @@
             <div class="container">
                 <div class="player-container">
                     <div class="player-section">
-                        <h2>プレーヤー</h2>
+                        <h2>プレイヤー</h2>
                         <div id="player"></div>
                         <div class="url-input">
                             <input type="text" id="videoUrl" placeholder="YouTubeのURLを入力...">
@@ -723,9 +723,10 @@
         function addToPlayHistory(videoItem) {
             // 改善点2: 動画IDをタイトルとして設定
             const historyItem = {
-                videoId: videoItem.videoId,
-                title: `動画 ID: ${videoItem.videoId}` // 動画IDをタイトルとして設定
-            };
+               videoId: videoItem.videoId,
+               title: videoItem.title || `動画 ID: ${videoItem.videoId}`
+        };
+
             
             // 重複を削除
             playHistory = playHistory.filter(item => item.videoId !== videoItem.videoId);
@@ -960,10 +961,21 @@
                 const playlistName = prompt('プレイリスト名を入力してください:');
                 
                 if (playlistName) {
-                    savedPlaylists[playlistName] = [...currentPlaylist];
+                    if (savedPlaylists[playlistName]) {
+                        // 既存のプレイリストに追加（重複除外）
+                        const existing = savedPlaylists[playlistName].map(item => item.videoId);
+                        const newItems = currentPlaylist.filter(item => !existing.includes(item.videoId));
+                        savedPlaylists[playlistName] = savedPlaylists[playlistName].concat(newItems);
+                        showNotification('既存のプレイリストに追加しました');
+                    } else {
+                        // 新しいプレイリストとして保存
+                        savedPlaylists[playlistName] = [...currentPlaylist];
+                        showNotification('プレイリストを保存しました');
+                    }
                     saveUserData();
                     updateSavedPlaylists();
-                    showNotification('プレイリストを保存しました');
+                }
+
                 }
             });
         });
