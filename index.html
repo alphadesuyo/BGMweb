@@ -756,9 +756,23 @@
 
         // ビデオタイトルを取得
         async function getVideoTitle(videoId) {
-            // 改善点2: タイトルとして動画IDを表示する
-            return `動画 ID: ${videoId}`;
+            return new Promise((resolve) => {
+                const tempPlayer = new YT.Player(document.createElement('div'), {
+                    videoId,
+                    events: {
+                        onReady: (event) => {
+                            const title = event.target.getVideoData().title;
+                            event.target.destroy();
+                            resolve(title || `動画 ID: ${videoId}`);
+                        },
+                        onError: () => {
+                            resolve(`動画 ID: ${videoId}`);
+                        }
+                    }
+                });
+            });
         }
+
 
         // モバイルデバイスかどうかを検出
         function isMobileDevice() {
