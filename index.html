@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -21,44 +22,55 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             -webkit-tap-highlight-color: transparent;
+            font-size: 16px;
         }
 
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 15px 0;
+            padding: 10px 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 15px;
+            flex-wrap: wrap;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
+            margin: 5px 0;
         }
 
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .nav-links a {
             color: white;
             text-decoration: none;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 4px;
             transition: background-color 0.3s;
+            margin: 2px;
+            font-size: 0.9rem;
         }
 
         .nav-links a:hover {
@@ -66,32 +78,26 @@
         }
 
         main {
-            padding: 20px;
+            padding: 10px 0;
         }
 
         .player-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        
-        @media (min-width: 768px) {
-            .player-container {
-                grid-template-columns: 2fr 1fr;
-            }
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .player-section {
             background-color: var(--card-color);
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .playlist-section {
             background-color: var(--card-color);
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
@@ -104,13 +110,15 @@
 
         .url-input {
             display: flex;
-            margin-top: 20px;
-            gap: 10px;
+            margin-top: 15px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .url-input input {
             flex: 1;
-            padding: 10px;
+            min-width: 150px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
@@ -121,10 +129,11 @@
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
+            min-width: 80px;
         }
 
         .url-input button:hover {
@@ -135,8 +144,8 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
-            gap: 10px;
+            margin-top: 15px;
+            gap: 8px;
         }
 
         .control-btn {
@@ -144,11 +153,23 @@
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 10px 15px;
+            padding: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             transition: background-color 0.3s;
-            margin: 3px;
+            margin: 2px;
+            min-width: 70px;
+            flex-grow: 1;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 380px) {
+            .control-btn {
+                padding: 10px;
+                font-size: 13px;
+                min-width: 60px;
+            }
         }
 
         .control-btn:disabled {
@@ -168,6 +189,8 @@
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background-color 0.3s;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         .playlist-item:hover {
@@ -177,11 +200,20 @@
         .playlist-item-title {
             flex: 1;
             margin-right: 10px;
+            min-width: 150px;
+            word-break: break-word;
+        }
+
+        .playlist-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
         }
 
         .login-container {
+            width: 90%;
             max-width: 400px;
-            margin: 100px auto;
+            margin: 50px auto;
             background-color: var(--card-color);
             border-radius: 8px;
             padding: 20px;
@@ -202,7 +234,7 @@
 
         .form-group input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
@@ -213,6 +245,13 @@
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            min-width: 120px;
         }
 
         .hidden {
@@ -223,16 +262,30 @@
             display: flex;
             border-bottom: 1px solid #ddd;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 2px;
         }
 
         .tab-nav button {
             background: none;
             border: none;
-            padding: 10px 20px;
+            padding: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            flex: 1;
+            min-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 480px) {
+            .tab-nav button {
+                font-size: 12px;
+                padding: 8px 5px;
+            }
         }
 
         .tab-nav button.active {
@@ -255,6 +308,14 @@
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
         }
 
         .save-playlist-btn {
@@ -262,7 +323,7 @@
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
@@ -280,10 +341,53 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transform: translateX(120%);
             transition: transform 0.3s;
+            z-index: 1000;
+            max-width: 80%;
+            word-break: break-word;
         }
 
         .notification.show {
             transform: translateX(0);
+        }
+
+        h2, h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* レスポンシブ設定の強化 */
+        @media (min-width: 768px) {
+            .player-container {
+                flex-direction: row;
+            }
+            
+            .player-section {
+                flex: 2;
+            }
+            
+            .playlist-section {
+                flex: 1;
+            }
+
+            .url-input input {
+                min-width: 250px;
+            }
+        }
+
+        /* 小さいスマホ画面用 */
+        @media (max-width: 320px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                margin-top: 5px;
+            }
+
+            .controls {
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
@@ -294,11 +398,11 @@
         <form id="loginForm">
             <div class="form-group">
                 <label for="username">ユーザー名</label>
-                <input type="text" id="username" required>
+                <input type="text" id="username" required autocomplete="username">
             </div>
             <div class="form-group">
                 <label for="password">パスワード</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" required autocomplete="current-password">
             </div>
             <div class="form-actions">
                 <button type="button" id="registerBtn" class="control-btn">新規登録</button>
@@ -334,14 +438,14 @@
                             <button id="pauseBtn" class="control-btn" disabled>一時停止</button>
                             <button id="muteBtn" class="control-btn" disabled>ミュート</button>
                             <button id="loopBtn" class="control-btn">ループ</button>
-                            <button id="addToPlaylistBtn" class="control-btn">プレイリストに追加</button>
+                            <button id="addToPlaylistBtn" class="control-btn">追加</button>
                         </div>
                     </div>
                     <div class="playlist-section">
                         <div class="tab-nav">
-                            <button class="tab-link active" data-tab="currentPlaylist">現在のプレイリスト</button>
+                            <button class="tab-link active" data-tab="currentPlaylist">現在の再生リスト</button>
                             <button class="tab-link" data-tab="history">再生履歴</button>
-                            <button class="tab-link" data-tab="savedPlaylists">保存済みプレイリスト</button>
+                            <button class="tab-link" data-tab="savedPlaylists">保存済み</button>
                         </div>
                         
                         <div id="currentPlaylist" class="tab-content active">
@@ -495,6 +599,9 @@
                 title.className = 'playlist-item-title';
                 title.textContent = item.title || `動画 ${index + 1}`;
                 
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'playlist-actions';
+                
                 const playBtn = document.createElement('button');
                 playBtn.className = 'control-btn';
                 playBtn.textContent = '再生';
@@ -509,14 +616,17 @@
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'control-btn';
                 removeBtn.textContent = '削除';
-                removeBtn.onclick = () => {
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
                     currentPlaylist.splice(index, 1);
                     updatePlaylist();
                 };
                 
+                actionsDiv.appendChild(playBtn);
+                actionsDiv.appendChild(removeBtn);
+                
                 playlistItem.appendChild(title);
-                playlistItem.appendChild(playBtn);
-                playlistItem.appendChild(removeBtn);
+                playlistItem.appendChild(actionsDiv);
                 playlistContainer.appendChild(playlistItem);
             });
         }
@@ -534,6 +644,9 @@
                 title.className = 'playlist-item-title';
                 title.textContent = item.title || `動画 ${index + 1}`;
                 
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'history-actions';
+                
                 const playBtn = document.createElement('button');
                 playBtn.className = 'control-btn';
                 playBtn.textContent = '再生';
@@ -544,16 +657,19 @@
                 
                 const addBtn = document.createElement('button');
                 addBtn.className = 'control-btn';
-                addBtn.textContent = 'プレイリストに追加';
-                addBtn.onclick = () => {
+                addBtn.textContent = '追加';
+                addBtn.onclick = (e) => {
+                    e.stopPropagation();
                     currentPlaylist.push(item);
                     updatePlaylist();
                     showNotification('プレイリストに追加しました');
                 };
                 
+                actionsDiv.appendChild(playBtn);
+                actionsDiv.appendChild(addBtn);
+                
                 historyItem.appendChild(title);
-                historyItem.appendChild(playBtn);
-                historyItem.appendChild(addBtn);
+                historyItem.appendChild(actionsDiv);
                 historyContainer.appendChild(historyItem);
             });
         }
@@ -571,9 +687,12 @@
                 title.className = 'playlist-item-title';
                 title.textContent = name + ` (${playlist.length}曲)`;
                 
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'playlist-actions';
+                
                 const loadBtn = document.createElement('button');
                 loadBtn.className = 'control-btn';
-                loadBtn.textContent = '読み込み';
+                loadBtn.textContent = '読込';
                 loadBtn.onclick = () => {
                     currentPlaylist = [...playlist];
                     updatePlaylist();
@@ -583,16 +702,19 @@
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'control-btn';
                 deleteBtn.textContent = '削除';
-                deleteBtn.onclick = () => {
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
                     delete savedPlaylists[name];
                     saveUserData();
                     updateSavedPlaylists();
                     showNotification('プレイリストを削除しました');
                 };
                 
+                actionsDiv.appendChild(loadBtn);
+                actionsDiv.appendChild(deleteBtn);
+                
                 playlistItem.appendChild(title);
-                playlistItem.appendChild(loadBtn);
-                playlistItem.appendChild(deleteBtn);
+                playlistItem.appendChild(actionsDiv);
                 savedPlaylistsContainer.appendChild(playlistItem);
             }
         }
@@ -630,6 +752,11 @@
             // 実際にはYouTube APIを使用すべきですが、
             // ここではダミーのタイトルを返します
             return `動画 ID: ${videoId}`;
+        }
+
+        // モバイルデバイスかどうかを検出
+        function isMobileDevice() {
+            return (window.innerWidth <= 768);
         }
 
         // DOMの読み込み完了後の処理
@@ -744,6 +871,14 @@
                     }
                 } else {
                     showNotification('無効なYouTube URLです');
+                }
+            });
+
+            // URLの入力欄でEnterキーを押したときの処理
+            videoUrlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    loadBtn.click();
                 }
             });
 
