@@ -761,9 +761,8 @@
                     videoId,
                     events: {
                         onReady: (event) => {
-                            const title = event.target.getVideoData().title;
+                            const title = player.getVideoData().title || `動画 ID: ${videoId}`;
                             event.target.destroy();
-                            resolve(title || `動画 ID: ${videoId}`);
                         },
                         onError: () => {
                             resolve(`動画 ID: ${videoId}`);
