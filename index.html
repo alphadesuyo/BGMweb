@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player - YouTubeプレーヤー</title>
+    <meta name="description" content="YouTubeの音楽再生に特化したプレーヤー">
+    <style>
+        :root {
+            --primary-color: #6200ea;
+            --secondary-color: #b388ff;
+            --bg-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .player-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .player-container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .player-section {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .playlist-section {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 4px;
+            background-color: #000;
+        }
+
+        .url-input {
+            display: flex;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .url-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .url-input button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .url-input button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin: 3px;
+        }
+
+        .control-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .control-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .playlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .playlist-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .playlist-item-title {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .tab-nav button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-nav button.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .save-playlist-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transform: translateX(120%);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="loginPage" class="login-container">
+        <h2>Music Player</h2>
+        <p>YouTube音楽プレーヤーにログイン</p>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">ユーザー名</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="registerBtn" class="control-btn">新規登録</button>
+                <button type="submit" class="control-btn">ログイン</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="appPage" class="hidden">
+        <header>
+            <div class="header-content">
+                <div class="logo">Music Player</div>
+                <div class="nav-links">
+                    <a href="#" id="homeLink">ホーム</a>
+                    <a href="#" id="playlistsLink">プレイリスト</a>
+                    <a href="#" id="logoutBtn">ログアウト</a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="player-container">
+                    <div class="player-section">
+                        <h2>プレーヤー</h2>
+                        <div id="player"></div>
+                        <div class="url-input">
+                            <input type="text" id="videoUrl" placeholder="YouTubeのURLを入力...">
+                            <button id="loadBtn">読み込み</button>
+                        </div>
+                        <div class="controls">
+                            <button id="playBtn" class="control-btn" disabled>再生</button>
+                            <button id="pauseBtn" class="control-btn" disabled>一時停止</button>
+                            <button id="muteBtn" class="control-btn" disabled>ミュート</button>
+                            <button id="loopBtn" class="control-btn">ループ</button>
+                            <button id="addToPlaylistBtn" class="control-btn">プレイリストに追加</button>
+                        </div>
+                    </div>
+                    <div class="playlist-section">
+                        <div class="tab-nav">
+                            <button class="tab-link active" data-tab="currentPlaylist">現在のプレイリスト</button>
+                            <button class="tab-link" data-tab="history">再生履歴</button>
+                            <button class="tab-link" data-tab="savedPlaylists">保存済みプレイリスト</button>
+                        </div>
+                        
+                        <div id="currentPlaylist" class="tab-content active">
+                            <h3>現在のプレイリスト</h3>
+                            <div id="playlist-items"></div>
+                            <button id="saveCurrentPlaylistBtn" class="save-playlist-btn">このプレイリストを保存</button>
+                        </div>
+                        
+                        <div id="history" class="tab-content">
+                            <h3>再生履歴</h3>
+                            <div id="history-items"></div>
+                        </div>
+                        
+                        <div id="savedPlaylists" class="tab-content">
+                            <h3>保存済みプレイリスト</h3>
+                            <div id="saved-playlists"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script>
+        // YT API の読み込み
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // グローバル変数
+        let player;
+        let currentUser = null;
+        let isLooping = false;
+        let currentPlaylist = [];
+        let playHistory = [];
+        let savedPlaylists = {};
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+        let playerReady = false;
+
+        // YouTube Player APIコールバック
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: '',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'autoplay': 0,
+                    'enablejsapi': 1,
+                    'origin': window.location.origin
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // プレーヤー準備完了
+            playerReady = true;
+            console.log('YouTube Player is ready');
+            
+            // ボタンを有効化
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = false;
+            document.getElementById('muteBtn').disabled = false;
+        }
+        
+        function onPlayerError(event) {
+            console.error('YouTube Player Error:', event.data);
+            showNotification('動画の読み込みエラー: ' + getErrorMessage(event.data));
+        }
+        
+        function getErrorMessage(errorCode) {
+            switch(errorCode) {
+                case 2:
+                    return 'パラメータが無効です';
+                case 5:
+                    return 'HTML5プレーヤーで問題が発生しました';
+                case 100:
+                    return '動画が見つかりません';
+                case 101:
+                case 150:
+                    return '埋め込み再生が許可されていない動画です';
+                default:
+                    return 'エラーが発生しました';
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            // 動画が終了した時の処理
+            if (event.data === YT.PlayerState.ENDED) {
+                if (isLooping) {
+                    player.seekTo(0);
+                    player.playVideo();
+                } else {
+                    playNextInPlaylist();
+                }
+            }
+        }
+
+        // YouTube URLからビデオIDを抽出
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // ユーザーデータの保存
+        function saveUserData() {
+            if (currentUser) {
+                users[currentUser] = {
+                    playHistory: playHistory,
+                    savedPlaylists: savedPlaylists
+                };
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        // プレイリストを再生
+        function playNextInPlaylist() {
+            if (currentPlaylist.length > 0) {
+                // 現在再生中の動画を削除
+                currentPlaylist.shift();
+                
+                if (currentPlaylist.length > 0) {
+                    const nextVideo = currentPlaylist[0];
+                    player.loadVideoById(nextVideo.videoId);
+                    updatePlaylist();
+                }
+            }
+        }
+
+        // プレイリストの更新
+        function updatePlaylist() {
+            const playlistContainer = document.getElementById('playlist-items');
+            playlistContainer.innerHTML = '';
+            
+            currentPlaylist.forEach((item, index) => {
+                const playlistItem = document.createElement('div');
+                playlistItem.className = 'playlist-item';
+                
+                const title = document.createElement('div');
+                title.className = 'playlist-item-title';
+                title.textContent = item.title || `動画 ${index + 1}`;
+                
+                const playBtn = document.createElement('button');
+                playBtn.className = 'control-btn';
+                playBtn.textContent = '再生';
+                playBtn.onclick = () => {
+                    // 選択した動画を先頭に移動
+                    const selected = currentPlaylist.splice(index, 1)[0];
+                    currentPlaylist.unshift(selected);
+                    player.loadVideoById(selected.videoId);
+                    updatePlaylist();
+                };
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'control-btn';
+                removeBtn.textContent = '削除';
+                removeBtn.onclick = () => {
+                    currentPlaylist.splice(index, 1);
+                    updatePlaylist();
+                };
+                
+                playlistItem.appendChild(title);
+                playlistItem.appendChild(playBtn);
+                playlistItem.appendChild(removeBtn);
+                playlistContainer.appendChild(playlistItem);
+            });
+        }
+
+        // 履歴の更新
+        function updateHistory() {
+            const historyContainer = document.getElementById('history-items');
+            historyContainer.innerHTML = '';
+            
+            playHistory.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const title = document.createElement('div');
+                title.className = 'playlist-item-title';
+                title.textContent = item.title || `動画 ${index + 1}`;
+                
+                const playBtn = document.createElement('button');
+                playBtn.className = 'control-btn';
+                playBtn.textContent = '再生';
+                playBtn.onclick = () => {
+                    player.loadVideoById(item.videoId);
+                    addToPlayHistory(item);
+                };
+                
+                const addBtn = document.createElement('button');
+                addBtn.className = 'control-btn';
+                addBtn.textContent = 'プレイリストに追加';
+                addBtn.onclick = () => {
+                    currentPlaylist.push(item);
+                    updatePlaylist();
+                    showNotification('プレイリストに追加しました');
+                };
+                
+                historyItem.appendChild(title);
+                historyItem.appendChild(playBtn);
+                historyItem.appendChild(addBtn);
+                historyContainer.appendChild(historyItem);
+            });
+        }
+
+        // 保存済みプレイリストの更新
+        function updateSavedPlaylists() {
+            const savedPlaylistsContainer = document.getElementById('saved-playlists');
+            savedPlaylistsContainer.innerHTML = '';
+            
+            for (const [name, playlist] of Object.entries(savedPlaylists)) {
+                const playlistItem = document.createElement('div');
+                playlistItem.className = 'playlist-item';
+                
+                const title = document.createElement('div');
+                title.className = 'playlist-item-title';
+                title.textContent = name + ` (${playlist.length}曲)`;
+                
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'control-btn';
+                loadBtn.textContent = '読み込み';
+                loadBtn.onclick = () => {
+                    currentPlaylist = [...playlist];
+                    updatePlaylist();
+                    showNotification('プレイリストを読み込みました');
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'control-btn';
+                deleteBtn.textContent = '削除';
+                deleteBtn.onclick = () => {
+                    delete savedPlaylists[name];
+                    saveUserData();
+                    updateSavedPlaylists();
+                    showNotification('プレイリストを削除しました');
+                };
+                
+                playlistItem.appendChild(title);
+                playlistItem.appendChild(loadBtn);
+                playlistItem.appendChild(deleteBtn);
+                savedPlaylistsContainer.appendChild(playlistItem);
+            }
+        }
+
+        // 再生履歴に追加
+        function addToPlayHistory(videoItem) {
+            // 重複を削除
+            playHistory = playHistory.filter(item => item.videoId !== videoItem.videoId);
+            
+            // 履歴の先頭に追加
+            playHistory.unshift(videoItem);
+            
+            // 最大100件まで保存
+            if (playHistory.length > 100) {
+                playHistory.pop();
+            }
+            
+            updateHistory();
+            saveUserData();
+        }
+
+        // 通知を表示
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ビデオタイトルを取得
+        async function getVideoTitle(videoId) {
+            // 実際にはYouTube APIを使用すべきですが、
+            // ここではダミーのタイトルを返します
+            return `動画 ID: ${videoId}`;
+        }
+
+        // DOMの読み込み完了後の処理
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginPage = document.getElementById('loginPage');
+            const appPage = document.getElementById('appPage');
+            const loginForm = document.getElementById('loginForm');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const videoUrlInput = document.getElementById('videoUrl');
+            const loadBtn = document.getElementById('loadBtn');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const loopBtn = document.getElementById('loopBtn');
+            const addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+            const saveCurrentPlaylistBtn = document.getElementById('saveCurrentPlaylistBtn');
+            const tabLinks = document.querySelectorAll('.tab-link');
+
+            // タブ切り替え
+            tabLinks.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // アクティブタブの更新
+                    tabLinks.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // タブコンテンツの切り替え
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // ログインフォームの送信
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // 実際のアプリケーションでは適切な認証が必要です
+                if (users[username]) {
+                    currentUser = username;
+                    playHistory = users[username].playHistory || [];
+                    savedPlaylists = users[username].savedPlaylists || {};
+                    
+                    updateHistory();
+                    updateSavedPlaylists();
+                    
+                    loginPage.classList.add('hidden');
+                    appPage.classList.remove('hidden');
+                    
+                    showNotification(`ようこそ、${username}さん`);
+                } else {
+                    showNotification('ユーザーが見つかりません');
+                }
+            });
+
+            // 新規登録ボタン
+            registerBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (username && password) {
+                    if (!users[username]) {
+                        users[username] = {
+                            playHistory: [],
+                            savedPlaylists: {}
+                        };
+                        localStorage.setItem('users', JSON.stringify(users));
+                        showNotification('登録が完了しました。ログインしてください。');
+                    } else {
+                        showNotification('このユーザー名は既に使用されています');
+                    }
+                } else {
+                    showNotification('ユーザー名とパスワードを入力してください');
+                }
+            });
+
+            // ログアウトボタン
+            logoutBtn.addEventListener('click', () => {
+                saveUserData();
+                currentUser = null;
+                appPage.classList.add('hidden');
+                loginPage.classList.remove('hidden');
+            });
+
+            // 動画の読み込み
+            loadBtn.addEventListener('click', async () => {
+                const url = videoUrlInput.value.trim();
+                const videoId = extractVideoId(url);
+                
+                if (videoId) {
+                    try {
+                        console.log('Loading video ID:', videoId);
+                        player.loadVideoById(videoId);
+                        
+                        // タイトルを取得して履歴に追加
+                        const title = await getVideoTitle(videoId);
+                        const videoItem = { videoId, title };
+                        
+                        addToPlayHistory(videoItem);
+                        videoUrlInput.value = '';
+                        
+                        // モバイルでのキーボードを閉じる
+                        videoUrlInput.blur();
+                    } catch (error) {
+                        console.error('Load video error:', error);
+                        showNotification('動画の読み込みエラー: ' + error.message);
+                    }
+                } else {
+                    showNotification('無効なYouTube URLです');
+                }
+            });
+
+            // 再生ボタン
+            playBtn.addEventListener('click', () => {
+                if (!playerReady) {
+                    showNotification('プレーヤーの準備ができていません');
+                    return;
+                }
+                
+                try {
+                    player.playVideo();
+                    console.log('Play button clicked');
+                } catch (error) {
+                    console.error('Play video error:', error);
+                    showNotification('再生エラー: ' + error.message);
+                }
+            });
+
+            // 一時停止ボタン
+            pauseBtn.addEventListener('click', () => {
+                if (!playerReady) {
+                    showNotification('プレーヤーの準備ができていません');
+                    return;
+                }
+                
+                try {
+                    player.pauseVideo();
+                } catch (error) {
+                    console.error('Pause video error:', error);
+                    showNotification('一時停止エラー: ' + error.message);
+                }
+            });
+
+            // ミュートボタン
+            muteBtn.addEventListener('click', () => {
+                if (player.isMuted()) {
+                    player.unMute();
+                    muteBtn.textContent = 'ミュート';
+                } else {
+                    player.mute();
+                    muteBtn.textContent = 'ミュート解除';
+                }
+            });
+
+            // ループボタン
+            loopBtn.addEventListener('click', () => {
+                isLooping = !isLooping;
+                loopBtn.textContent = isLooping ? 'ループOFF' : 'ループ';
+                showNotification(isLooping ? 'ループを有効にしました' : 'ループを無効にしました');
+            });
+
+            // プレイリストに追加ボタン
+            addToPlaylistBtn.addEventListener('click', () => {
+                const videoId = player.getVideoData().video_id;
+                
+                if (videoId) {
+                    const title = player.getVideoData().title || `動画 ID: ${videoId}`;
+                    const videoItem = { videoId, title };
+                    
+                    currentPlaylist.push(videoItem);
+                    updatePlaylist();
+                    showNotification('プレイリストに追加しました');
+                }
+            });
+
+            // 現在のプレイリストを保存
+            saveCurrentPlaylistBtn.addEventListener('click', () => {
+                if (currentPlaylist.length === 0) {
+                    showNotification('プレイリストが空です');
+                    return;
+                }
+                
+                const playlistName = prompt('プレイリスト名を入力してください:');
+                
+                if (playlistName) {
+                    savedPlaylists[playlistName] = [...currentPlaylist];
+                    saveUserData();
+                    updateSavedPlaylists();
+                    showNotification('プレイリストを保存しました');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
