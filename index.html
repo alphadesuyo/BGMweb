@@ -407,6 +407,11 @@
                 <button type="button" id="registerBtn" class="control-btn">新規登録</button>
                 <button type="submit" class="control-btn">ログイン</button>
             </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="exportUserData()" class="control-btn">データ保存（エクスポート）</button>
+                <button onclick="importUserData()" class="control-btn">データ読み込み（インポート）</button>
+                <input type="file" id="importFile" style="display:none;" onchange="handleFile(event)">
+            </div>
         </form>
     </div>
 
@@ -593,6 +598,37 @@
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
+        }
+ 
+        // ユーザーデータエクスポート
+        function exportUserData() {
+            const dataStr = localStorage.getItem('users');
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'userdata_backup.json';
+            a.click();
+        }  
+        
+        // ユーザーデータインポート
+        function importUserData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    localStorage.setItem('users', JSON.stringify(data));
+                    alert('データを読み込みました。ページを再読み込みしてください。');
+                } catch (error) {
+                    alert('読み込みに失敗しました。');
+                }
+            };
+            reader.readAsText(file);
         }
 
         // ユーザーデータの保存
